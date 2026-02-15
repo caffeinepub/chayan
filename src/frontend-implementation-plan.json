@@ -1,0 +1,66 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Rebuild and verify chayan chat frontend end-to-end (Internet Identity + E2EE + privacy controls)",
+  "requirements": [
+    {
+      "id": "REQ-10",
+      "summary": "Make the existing chat UI work end-to-end for an authenticated Internet Identity user: discover contacts, start 1:1 chats, encrypt/send, poll/fetch/decrypt, and use privacy controls (delete message, delete conversation, clear local keys) without breaking the app.",
+      "acceptanceCriteria": [
+        "When not authenticated, the app shows the sign-in screen and all chat functionality is gated behind login.",
+        "After logging in with Internet Identity, the user can search/browse other registered users (excluding themselves) and start a new 1:1 conversation.",
+        "Sending a message stores only ciphertext on the backend and the UI displays the decrypted plaintext after fetch.",
+        "Message list refreshes via polling (no real-time sockets).",
+        "The sender can delete a message and it is removed from future fetches.",
+        "The user can delete a conversation and clear local encryption keys using the existing privacy menu without breaking the app."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/lib/crypto/chayanCrypto.ts",
+          "operation": "modify",
+          "description": "Fix end-to-end decryptability by introducing a stable 1:1 conversation identifier derived from (currentUserPrincipal, otherUserPrincipal) and using it consistently for key lookup, encryption, and decryption; keep all encryption client-side so only ciphertext is sent to the backend."
+        },
+        {
+          "path": "frontend/src/features/messages/useSendMessage.ts",
+          "operation": "modify",
+          "description": "Compute the stable conversation identifier using the current Internet Identity principal and the recipient principal, encrypt plaintext with chayanCrypto using that identifier, and send only ciphertext via the existing backend function; ensure no plaintext is logged or transmitted."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Update message decryption to use the same stable conversation identifier (current user + selected contact) and retain polling-based refresh (no sockets); ensure message query behaves predictably when actor/identity is not ready and surfaces decrypt errors as 'cannot be decrypted' UI state."
+        },
+        {
+          "path": "frontend/src/features/privacy/ConversationPrivacyMenu.tsx",
+          "operation": "modify",
+          "description": "Wire up the existing privacy menu actions: (1) clear local encryption keys for the current conversation using the stable conversation identifier without forcing a full page reload, and (2) delete the conversation using the existing backend function, then clear selection and refresh relevant cached data. Use the shadcn-ui DropdownMenu and AlertDialog components by composition only; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/state/conversationsStore.ts",
+          "operation": "modify",
+          "description": "Extend the conversation store to track a persistent list of known 1:1 conversations (e.g., add/remove/upsert conversations and store display names) so the ConversationList can render started chats; persist to localStorage and clear appropriately on sign-out."
+        },
+        {
+          "path": "frontend/src/components/ChatLayout.tsx",
+          "operation": "modify",
+          "description": "Ensure authenticated bootstrapping is robust: register/update the user with the backend only after identity+actor are ready; generate/store a client-side encryption key material as needed for registration (no placeholders), and update the local conversation store when starting a new chat so the left-side list updates immediately."
+        },
+        {
+          "path": "frontend/src/features/conversations/ConversationList.tsx",
+          "operation": "modify",
+          "description": "Render conversations from the enhanced local conversation store (instead of the current stubbed empty query) and keep selection in sync; show correct empty/loading states without introducing new routes or pages. Use the shadcn-ui ScrollArea and Button components by composition only; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/features/contacts/NewChatDialog.tsx",
+          "operation": "modify",
+          "description": "Exclude the currently signed-in user from search results (filter by current Internet Identity principal) and keep the existing contact discovery flow for starting 1:1 conversations. Use the shadcn-ui Dialog/Input/ScrollArea components by composition only; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ChayanHeader.tsx",
+          "operation": "modify",
+          "description": "On sign-out, clear cached application data on the client (React Query cache and local conversation selection/list) in addition to clearing Internet Identity state, so authenticated data and decrypted content are not shown after logout. Use the shadcn-ui DropdownMenu and Button components by composition only; verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

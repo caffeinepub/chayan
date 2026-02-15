@@ -1,0 +1,21 @@
+{
+  "frontend/src/App.tsx": "Root application component that handles authentication state and renders either the sign-in screen or the main chat layout based on user authentication status.",
+  "frontend/src/screens/SignInScreen.tsx": "Branded sign-in screen displaying the chayan logo and Internet Identity authentication with privacy-focused messaging and error handling.",
+  "frontend/src/components/ChatLayout.tsx": "Main authenticated layout that registers users with real encryption key material and updates the conversation store when starting new chats.",
+  "frontend/src/components/ChayanHeader.tsx": "Application header with sign-out functionality that clears React Query cache and conversation store before logging out.",
+  "frontend/src/features/contacts/NewChatDialog.tsx": "Modal dialog for searching users and starting conversations, automatically filtering out the currently authenticated user from results.",
+  "frontend/src/features/conversations/ConversationList.tsx": "Left sidebar rendering persisted conversations from the store, sorted by last message time with proper selection state.",
+  "frontend/src/features/chat/ConversationView.tsx": "Main conversation view container that displays the message timeline, composer, and privacy menu for the selected conversation.",
+  "frontend/src/features/chat/MessageTimeline.tsx": "Scrollable message timeline displaying encrypted/decrypted messages with timestamps, delete actions, and error states for undecryptable messages.",
+  "frontend/src/features/chat/MessageComposer.tsx": "Message input component with send button, keyboard shortcuts, and loading/error states for composing and sending messages.",
+  "frontend/src/features/privacy/ConversationPrivacyMenu.tsx": "Dropdown menu with working privacy controls for clearing local encryption keys and deleting conversations using backend calls and cache invalidation.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for searching users (excluding current user), fetching and decrypting messages using stable conversation identifiers with polling-based refresh.",
+  "frontend/src/features/messages/useSendMessage.ts": "React Query mutation hook that encrypts messages using the stable conversation identifier derived from current user and recipient principals before sending ciphertext to backend.",
+  "frontend/src/features/messages/useDeleteMessage.ts": "React Query mutation hook for deleting messages from the backend with cache invalidation.",
+  "frontend/src/lib/crypto/chayanCrypto.ts": "Client-side encryption/decryption utilities with stable conversation identifier generation from two principals, ensuring both parties can encrypt/decrypt messages using the same key.",
+  "frontend/src/lib/storage/localKeyStore.ts": "Local storage utilities for managing conversation encryption keys with clear and query operations.",
+  "frontend/src/state/conversationsStore.ts": "Zustand store with localStorage persistence for managing conversation list, selection state, and CRUD operations on conversations.",
+  "frontend/src/index.css": "Global styles with dark theme OKLCH color system featuring neutral dark backgrounds and green accent colors.",
+  "frontend/src/main.tsx": "Application entry point with React Query, Internet Identity, and dark theme providers configured.",
+  "frontend/tailwind.config.js": "Tailwind configuration with extended color tokens, border radius, and animation utilities for the dark theme."
+}
