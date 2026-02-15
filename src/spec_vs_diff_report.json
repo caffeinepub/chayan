@@ -1,59 +1,44 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T01:42:45.806Z",
-  "summary": "REQ-10 is largely implemented end-to-end (II-gated UI per file summaries, user discovery excluding self, client-side encrypt-before-send and decrypt-after-fetch, polling refresh, and privacy UI for deleting messages/conversations and clearing local keys). However, backend deletion semantics for both deleteMessage and deleteConversation appear incomplete/incorrect relative to the acceptance criteria (conversation deletion does not remove all messages with the contact; message deletion is not clearly restricted to the sender and may not match messages where the caller was the sender vs recipient). The diff also introduces an unrequested admin-token/access-control initialization path.",
+  "generatedAt": "2026-02-15T02:04:17.431Z",
+  "summary": "Frontend adds an Edit Profile dialog and a profile-fetch/register hook, and backend adds caller profile query + displayName update methods. However, backend registration is not idempotent as required, and an extra backend method (updateEncryptionKey) was added without being requested.",
   "missing_requirements": [
     {
-      "id": "REQ-10",
-      "requirement": "The sender can delete a message and it is removed from future fetches.",
-      "reason": "Backend deleteMessage only filters out messages where msg.recipient == recipient and msg.timestamp == timestamp, and does not check msg.sender == caller. This may fail to delete messages sent by the caller depending on how recipient is passed, and does not enforce 'sender-only' deletion as specified.",
+      "id": "REQ-12",
+      "requirement": "Make user registration idempotent on the backend so that logging in multiple times does not overwrite an existing profile unintentionally.",
+      "reason": "The backend registration method shown (saveCallerProfile) unconditionally writes a new Profile for the caller via users.add(caller, profile), which would overwrite an existing displayName/encryptionKey. There is no conditional guard to preserve an existing profile when already registered.",
       "evidence": [
-        "backend/main.mo"
+        "backend/main.mo (saveCallerProfile uses users.add(caller, profile) without checking existing profile)"
       ]
     },
     {
-      "id": "REQ-10",
-      "requirement": "The user can delete a conversation using the existing privacy menu without breaking the app.",
-      "reason": "Backend deleteConversation filters only messages where msg.sender == caller and msg.recipient == recipient, leaving messages sent by the other participant intact; this does not appear to delete the full 1:1 conversation from future fetches for the caller.",
+      "id": "REQ-14",
+      "requirement": "Repeated sign-ins do not create or overwrite the profile when it already exists.",
+      "reason": "The frontend attempts to register only when getCallerProfile() returns null, but because the backend registration method (saveCallerProfile) is not idempotent, the overall system does not guarantee that repeated sign-ins/registrations won’t overwrite an existing profile if saveCallerProfile is called again (intentionally or due to client retry/edge cases).",
       "evidence": [
-        "backend/main.mo",
-        "frontend/src/features/privacy/ConversationPrivacyMenu.tsx"
+        "frontend/src/features/profile/useCurrentUserProfile.ts (calls actor.saveCallerProfile when !profile)",
+        "backend/main.mo (saveCallerProfile overwrites unconditionally)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Admin secret token extraction from URL/session and initialization of backend access control using a `caffeineAdminToken` parameter.",
-      "reason": "REQ-10 does not mention admin tokens or access-control bootstrapping via URL parameters; this adds unrelated auth/config behavior.",
+      "description": "Backend method to update the caller’s encryption key (updateEncryptionKey).",
+      "reason": "BuildRequest only asked for reading the caller profile and updating displayName, plus idempotent registration behavior. No requirement requested a dedicated encryption key update API.",
       "evidence": [
-        "frontend/src/hooks/useActor.ts",
-        "frontend/src/utils/urlParams.ts",
-        "backend/main.mo"
-      ]
-    },
-    {
-      "description": "Backend authorization/access-control mixin and initialization (`AccessControl`, `MixinAuthorization`).",
-      "reason": "Not requested by REQ-10 and introduces additional authorization framework beyond Internet Identity gating described in the requirement.",
-      "evidence": [
-        "backend/main.mo"
+        "backend/main.mo (public shared func updateEncryptionKey(newKey : Text) : async ())"
       ]
     }
   ],
-  "confidence": 0.72,
+  "confidence": 0.74,
   "changed_files": [
     "backend/main.mo",
     "frontend-file-summaries.txt",
     "frontend/src/components/ChatLayout.tsx",
     "frontend/src/components/ChayanHeader.tsx",
-    "frontend/src/features/conversations/ConversationList.tsx",
-    "frontend/src/features/messages/useSendMessage.ts",
-    "frontend/src/features/privacy/ConversationPrivacyMenu.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/lib/crypto/chayanCrypto.ts",
-    "frontend/src/state/conversationsStore.ts",
-    "frontend/src/utils/urlParams.ts",
+    "frontend/src/features/profile/EditProfileDialog.tsx",
+    "frontend/src/features/profile/useCurrentUserProfile.ts",
     "project_state.json"
   ]
 }

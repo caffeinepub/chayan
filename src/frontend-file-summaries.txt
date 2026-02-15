@@ -1,8 +1,8 @@
 {
   "frontend/src/App.tsx": "Root application component that handles authentication state and renders either the sign-in screen or the main chat layout based on user authentication status.",
   "frontend/src/screens/SignInScreen.tsx": "Branded sign-in screen displaying the chayan logo and Internet Identity authentication with privacy-focused messaging and error handling.",
-  "frontend/src/components/ChatLayout.tsx": "Main authenticated layout that registers users with real encryption key material and updates the conversation store when starting new chats.",
-  "frontend/src/components/ChayanHeader.tsx": "Application header with sign-out functionality that clears React Query cache and conversation store before logging out.",
+  "frontend/src/components/ChatLayout.tsx": "Main authenticated layout that fetches or creates the user profile on load and passes display name update callbacks to the header.",
+  "frontend/src/components/ChayanHeader.tsx": "Application header with user dropdown menu including Edit profile action that opens the EditProfileDialog and handles profile updates.",
   "frontend/src/features/contacts/NewChatDialog.tsx": "Modal dialog for searching users and starting conversations, automatically filtering out the currently authenticated user from results.",
   "frontend/src/features/conversations/ConversationList.tsx": "Left sidebar rendering persisted conversations from the store, sorted by last message time with proper selection state.",
   "frontend/src/features/chat/ConversationView.tsx": "Main conversation view container that displays the message timeline, composer, and privacy menu for the selected conversation.",
@@ -17,5 +17,7 @@
   "frontend/src/state/conversationsStore.ts": "Zustand store with localStorage persistence for managing conversation list, selection state, and CRUD operations on conversations.",
   "frontend/src/index.css": "Global styles with dark theme OKLCH color system featuring neutral dark backgrounds and green accent colors.",
   "frontend/src/main.tsx": "Application entry point with React Query, Internet Identity, and dark theme providers configured.",
-  "frontend/tailwind.config.js": "Tailwind configuration with extended color tokens, border radius, and animation utilities for the dark theme."
+  "frontend/tailwind.config.js": "Tailwind configuration with extended color tokens, border radius, and animation utilities for the dark theme.",
+  "frontend/src/features/profile/useCurrentUserProfile.ts": "React Query hooks for fetching/creating the current user's profile on first load and updating the display name with cache invalidation.",
+  "frontend/src/features/profile/EditProfileDialog.tsx": "Modal dialog component for editing the user's display name with validation, error handling, and Save/Cancel actions using shadcn-ui components."
 }

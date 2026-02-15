@@ -1,40 +1,95 @@
 {
   "kind": "build_request",
-  "title": "Rebuild and verify the existing chayan chat website",
+  "title": "Add editable user profile (display name) for chayan",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-10",
-      "text": "Ensure the existing chayan web chat application is rebuilt and functions end-to-end for a signed-in user: sign in with Internet Identity, discover contacts, start a 1:1 conversation, send an encrypted message, fetch and display/decrypt messages, and use existing privacy controls (delete message, delete conversation, clear local keys).",
-      "target": "both",
+      "id": "REQ-11",
+      "text": "Add backend support for reading and editing the signed-in user's profile so the user can edit their display name after first login.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-1"
         ],
         "quotes": [
-          "Make a website for chatting"
+          "I want to edit it"
         ]
       },
       "acceptanceCriteria": [
-        "When not authenticated, the app shows the sign-in screen and all chat functionality is gated behind login.",
-        "After logging in with Internet Identity, the user can search/browse other registered users (excluding themselves) and start a new 1:1 conversation.",
-        "Sending a message stores only ciphertext on the backend and the UI displays the decrypted plaintext after fetch.",
-        "Message list refreshes via polling (no real-time sockets).",
-        "The sender can delete a message and it is removed from future fetches.",
-        "The user can delete a conversation and clear local encryption keys using the existing privacy menu without breaking the app."
+        "Backend exposes a query method that returns the caller’s current profile (at minimum: displayName and encryptionKey) or an explicit 'not registered' result.",
+        "Backend exposes a shared method that updates only the caller’s displayName without requiring re-registering the user.",
+        "Updating displayName does not change the user’s stored encryptionKey.",
+        "Calls to update displayName for a caller who is not registered do not corrupt state (either no-op or return an error result, but must be handled safely)."
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "text": "Make user registration idempotent on the backend so that logging in multiple times does not overwrite an existing profile unintentionally.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "I want to edit it"
+        ]
+      },
+      "acceptanceCriteria": [
+        "If the caller already has a profile, the registration path does not overwrite the existing displayName/encryptionKey unless explicitly intended by a dedicated update method.",
+        "If the caller does not yet have a profile, registration creates it successfully."
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "text": "Add a frontend 'Edit profile' flow that lets the signed-in user update their display name, and ensure the updated display name is shown in the header dropdown and used across the UI where the current user name is displayed.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "I want to edit it"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The header user dropdown includes an 'Edit profile' action.",
+        "Selecting 'Edit profile' opens a dialog with an editable display name field and Save/Cancel actions (English UI text).",
+        "Saving updates the display name via the backend and updates the displayed name in the header without requiring a full page refresh.",
+        "Validation prevents saving an empty/whitespace-only display name and shows a clear error message in English.",
+        "If the backend update fails, the UI shows an error message in English and leaves the previous display name unchanged."
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Update the frontend login/initialization behavior to load the current user profile from the backend (when available) and only generate/register a default profile when the user has no profile yet.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "I want to edit it"
+        ]
+      },
+      "acceptanceCriteria": [
+        "On app load after authentication, the app attempts to fetch the caller’s profile from the backend.",
+        "If a profile exists, the UI uses the stored displayName instead of regenerating a new default name.",
+        "If no profile exists, the app registers the user once with a default display name and generated encryption key material, then uses that display name in the UI.",
+        "Repeated sign-ins do not create or overwrite the profile when it already exists."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (shadcn components must be composed, not modified).",
-    "Do not modify any paths listed in SYSTEM_CONTEXT.frontend.immutablePaths.",
-    "Backend must remain a single Motoko actor with all logic in backend/main.mo; only add backend/migration.mo if an actual stable-state migration is required."
+    "Use English for any user-facing text.",
+    "Backend must remain a single Motoko actor with all logic in backend/main.mo; only add migration.mo if a state upgrade is actually required.",
+    "Do not edit any files under frontend/src/components/ui or other immutable paths listed in SYSTEM_CONTEXT; compose existing UI components instead.",
+    "Do not add third-party authentication providers; Internet Identity remains the only auth method."
   ],
   "nonGoals": [
-    "Group chats or channels.",
-    "Real-time messaging via WebSockets/Socket.io.",
-    "Third-party authentication providers other than Internet Identity.",
-    "External databases or non-Motoko backend services."
+    "Do not add avatars, profile photos, status messages, or presence/online indicators.",
+    "Do not add group chats or multi-user conversations.",
+    "Do not introduce real-time messaging (no WebSockets); keep existing polling behavior.",
+    "Do not change the client-side encryption scheme beyond what is necessary for profile editing."
   ],
   "imageRequirements": {
     "required": [],

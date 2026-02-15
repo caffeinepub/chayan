@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useConversationStore } from '../state/conversationsStore';
@@ -9,17 +10,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MessageSquarePlus, LogOut, User } from 'lucide-react';
+import { MessageSquarePlus, LogOut, User, Edit } from 'lucide-react';
+import EditProfileDialog from '../features/profile/EditProfileDialog';
 
 interface ChayanHeaderProps {
   displayName: string;
   onNewChat: () => void;
+  onDisplayNameUpdated: (newName: string) => void;
 }
 
-export default function ChayanHeader({ displayName, onNewChat }: ChayanHeaderProps) {
+export default function ChayanHeader({ displayName, onNewChat, onDisplayNameUpdated }: ChayanHeaderProps) {
   const { clear } = useInternetIdentity();
   const queryClient = useQueryClient();
   const { clearAllConversations } = useConversationStore();
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   const handleSignOut = async () => {
     // Clear all cached data
@@ -30,47 +34,64 @@ export default function ChayanHeader({ displayName, onNewChat }: ChayanHeaderPro
     await clear();
   };
 
+  const handleProfileSaved = (newName: string) => {
+    onDisplayNameUpdated(newName);
+  };
+
   return (
-    <header className="border-b border-border/50 bg-card/30 backdrop-blur-sm">
-      <div className="flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-3">
-          <img 
-            src="/assets/generated/chayan-logo.dim_512x512.png" 
-            alt="chayan logo" 
-            className="h-8 w-8"
-          />
-          <h1 className="text-xl font-bold text-foreground">chayan</h1>
-        </div>
+    <>
+      <header className="border-b border-border/50 bg-card/30 backdrop-blur-sm">
+        <div className="flex h-16 items-center justify-between px-4">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/assets/generated/chayan-logo.dim_512x512.png" 
+              alt="chayan logo" 
+              className="h-8 w-8"
+            />
+            <h1 className="text-xl font-bold text-foreground">chayan</h1>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={onNewChat}
-            className="bg-[oklch(0.65_0.19_145)] hover:bg-[oklch(0.60_0.19_145)] text-white"
-          >
-            <MessageSquarePlus className="mr-2 h-4 w-4" />
-            New Chat
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={onNewChat}
+              className="bg-[oklch(0.65_0.19_145)] hover:bg-[oklch(0.60_0.19_145)] text-white"
+            >
+              <MessageSquarePlus className="mr-2 h-4 w-4" />
+              New Chat
+            </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="px-2 py-1.5">
-                <p className="text-sm font-medium">{displayName}</p>
-                <p className="text-xs text-muted-foreground">Signed in</p>
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-2 py-1.5">
+                  <p className="text-sm font-medium">{displayName}</p>
+                  <p className="text-xs text-muted-foreground">Signed in</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setShowEditProfile(true)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      <EditProfileDialog
+        open={showEditProfile}
+        onOpenChange={setShowEditProfile}
+        currentDisplayName={displayName}
+        onSaved={handleProfileSaved}
+      />
+    </>
   );
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
+  "projectStateVersion": 7,
   "summary": "Plan and build a privacy-focused chat application named \"chayan\".",
   "architectural_notes": [],
   "known_issues": [],
@@ -77,6 +77,22 @@
         "REQ-10"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-a-frontend-edit-profile-flow-that-lets-the-signed-in-user-update-their-display-name-and-ensure-the-updated-display-name-is-shown-in-the-header-dropdown-and-used-across-the-ui-where-the-current-user-name-is-displayed",
+      "title": "Add a frontend 'Edit profile' flow that lets the signed-in user update their display name, and ensure the updated display name is shown in the header dropdown and used across the UI where the current user name is displayed.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-frontend-login-initialization-behavior-to-load-the-current-user-profile-from-the-backend-when-available-and-only-generate-register-a-default-profile-when-the-user-has-no-profile-yet",
+      "title": "Update the frontend login/initialization behavior to load the current user profile from the backend (when available) and only generate/register a default profile when the user has no profile yet.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -91,6 +107,22 @@
       "summary": "Add backend user profile support: on first login, register the caller as a user with a default display name; allow updating display name; store the user’s public encryption key used for client-side message encryption.",
       "reqIds": [
         "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Add backend support for reading and editing the signed-in user's profile so the user can edit their display name after first login.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Make user registration idempotent on the backend so that logging in multiple times does not overwrite an existing profile unintentionally.",
+      "reqIds": [
+        "REQ-12"
       ],
       "status": "pending"
     }

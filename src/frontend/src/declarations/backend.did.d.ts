@@ -16,6 +16,7 @@ export interface Message {
   'sender' : Principal,
   'timestamp' : Time,
 }
+export interface Profile { 'displayName' : string, 'encryptionKey' : string }
 export type Time = bigint;
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -25,13 +26,15 @@ export interface _SERVICE {
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'deleteConversation' : ActorMethod<[Principal], undefined>,
   'deleteMessage' : ActorMethod<[Principal, Time], undefined>,
+  'getCallerProfile' : ActorMethod<[], [] | [Profile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getMessages' : ActorMethod<[Principal], Array<Message>>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
-  'registerUser' : ActorMethod<[string, string], undefined>,
+  'saveCallerProfile' : ActorMethod<[string, string], undefined>,
   'searchUsers' : ActorMethod<[string], Array<[Principal, string]>>,
   'sendMessage' : ActorMethod<[Principal, string], undefined>,
   'startConversation' : ActorMethod<[Principal], undefined>,
+  'updateDisplayName' : ActorMethod<[string], undefined>,
   'updateEncryptionKey' : ActorMethod<[string], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

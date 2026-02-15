@@ -1,50 +1,64 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T01:42:45.808Z",
+  "generatedAt": "2026-02-15T02:04:17.434Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 4,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-10",
-        "summary": "Ensure the existing chayan web chat application is rebuilt and functions end-to-end for a signed-in user: sign in with Internet Identity, discover contacts, start a 1:1 conversation, send an encrypted message, fetch and display/decrypt messages, and use existing privacy controls (delete message, delete conversation, clear local keys).",
+        "id": "REQ-11",
+        "summary": "Add backend support for reading and editing the signed-in user's profile so the user can edit their display name after first login.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-12",
+        "summary": "Make user registration idempotent on the backend so that logging in multiple times does not overwrite an existing profile unintentionally.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-13",
+        "summary": "Add a frontend 'Edit profile' flow that lets the signed-in user update their display name, and ensure the updated display name is shown in the header dropdown and used across the UI where the current user name is displayed.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/lib/crypto/chayanCrypto.ts",
-          "frontend/src/features/messages/useSendMessage.ts",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/features/privacy/ConversationPrivacyMenu.tsx",
-          "frontend/src/state/conversationsStore.ts",
+          "frontend/src/features/profile/EditProfileDialog.tsx",
+          "frontend/src/components/ChayanHeader.tsx",
+          "frontend/src/components/ChatLayout.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/features/profile/EditProfileDialog.tsx",
+          "frontend/src/components/ChayanHeader.tsx",
+          "frontend/src/components/ChatLayout.tsx"
+        ]
+      },
+      {
+        "id": "REQ-14",
+        "summary": "Update the frontend login/initialization behavior to load the current user profile from the backend (when available) and only generate/register a default profile when the user has no profile yet.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/features/profile/useCurrentUserProfile.ts",
           "frontend/src/components/ChatLayout.tsx",
-          "frontend/src/features/conversations/ConversationList.tsx",
-          "frontend/src/features/contacts/NewChatDialog.tsx",
           "frontend/src/components/ChayanHeader.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/lib/crypto/chayanCrypto.ts",
-          "frontend/src/features/messages/useSendMessage.ts",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/features/privacy/ConversationPrivacyMenu.tsx",
-          "frontend/src/state/conversationsStore.ts",
+          "frontend/src/features/profile/useCurrentUserProfile.ts",
           "frontend/src/components/ChatLayout.tsx",
-          "frontend/src/features/conversations/ConversationList.tsx",
           "frontend/src/components/ChayanHeader.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/authorization/MixinAuthorization.mo",
-    "backend/authorization/access-control.mo",
     "backend/main.mo",
     "build-request.json",
-    "build-template/README.md",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
@@ -54,14 +68,8 @@
     "frontend/src/components/ChayanHeader.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
-    "frontend/src/features/conversations/ConversationList.tsx",
-    "frontend/src/features/messages/useSendMessage.ts",
-    "frontend/src/features/privacy/ConversationPrivacyMenu.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/lib/crypto/chayanCrypto.ts",
-    "frontend/src/state/conversationsStore.ts",
-    "frontend/src/utils/urlParams.ts",
+    "frontend/src/features/profile/EditProfileDialog.tsx",
+    "frontend/src/features/profile/useCurrentUserProfile.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

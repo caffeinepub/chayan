@@ -6,7 +6,7 @@ import ConversationList from '../features/conversations/ConversationList';
 import ConversationView from '../features/chat/ConversationView';
 import NewChatDialog from '../features/contacts/NewChatDialog';
 import { useConversationStore } from '../state/conversationsStore';
-import { generateEncryptionKeyMaterial } from '../lib/crypto/chayanCrypto';
+import { useCurrentUserProfile } from '../features/profile/useCurrentUserProfile';
 import type { Principal } from '@icp-sdk/core/principal';
 
 export default function ChatLayout() {
@@ -15,18 +15,15 @@ export default function ChatLayout() {
   const [showNewChat, setShowNewChat] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const { selectedContact, addOrUpdateConversation } = useConversationStore();
+  
+  // Fetch or create user profile
+  const { data: profile, isLoading: profileLoading, isFetched } = useCurrentUserProfile();
 
   useEffect(() => {
-    if (actor && identity) {
-      const principal = identity.getPrincipal();
-      const name = `User ${principal.toString().slice(0, 8)}`;
-      setDisplayName(name);
-      
-      // Register user with a real encryption key material
-      const encryptionKey = generateEncryptionKeyMaterial();
-      actor.registerUser(name, encryptionKey).catch(console.error);
+    if (profile) {
+      setDisplayName(profile.displayName);
     }
-  }, [actor, identity]);
+  }, [profile]);
 
   const handleStartChat = (contact: Principal, contactName: string) => {
     if (actor) {
@@ -39,11 +36,28 @@ export default function ChatLayout() {
     }
   };
 
+  const handleDisplayNameUpdated = (newName: string) => {
+    setDisplayName(newName);
+  };
+
+  // Show loading state while profile is being fetched/created
+  if (profileLoading || !isFetched) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto" />
+          <p className="text-muted-foreground">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen flex-col bg-background">
       <ChayanHeader 
         displayName={displayName}
         onNewChat={() => setShowNewChat(true)}
+        onDisplayNameUpdated={handleDisplayNameUpdated}
       />
       
       <div className="flex flex-1 overflow-hidden">

@@ -14,6 +14,10 @@ export const UserRole = IDL.Variant({
   'guest' : IDL.Null,
 });
 export const Time = IDL.Int;
+export const Profile = IDL.Record({
+  'displayName' : IDL.Text,
+  'encryptionKey' : IDL.Text,
+});
 export const Message = IDL.Record({
   'ciphertext' : IDL.Text,
   'recipient' : IDL.Principal,
@@ -26,10 +30,11 @@ export const idlService = IDL.Service({
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'deleteConversation' : IDL.Func([IDL.Principal], [], []),
   'deleteMessage' : IDL.Func([IDL.Principal, Time], [], []),
+  'getCallerProfile' : IDL.Func([], [IDL.Opt(Profile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getMessages' : IDL.Func([IDL.Principal], [IDL.Vec(Message)], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-  'registerUser' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'saveCallerProfile' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'searchUsers' : IDL.Func(
       [IDL.Text],
       [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Text))],
@@ -37,6 +42,7 @@ export const idlService = IDL.Service({
     ),
   'sendMessage' : IDL.Func([IDL.Principal, IDL.Text], [], []),
   'startConversation' : IDL.Func([IDL.Principal], [], []),
+  'updateDisplayName' : IDL.Func([IDL.Text], [], []),
   'updateEncryptionKey' : IDL.Func([IDL.Text], [], []),
 });
 
@@ -49,6 +55,10 @@ export const idlFactory = ({ IDL }) => {
     'guest' : IDL.Null,
   });
   const Time = IDL.Int;
+  const Profile = IDL.Record({
+    'displayName' : IDL.Text,
+    'encryptionKey' : IDL.Text,
+  });
   const Message = IDL.Record({
     'ciphertext' : IDL.Text,
     'recipient' : IDL.Principal,
@@ -61,10 +71,11 @@ export const idlFactory = ({ IDL }) => {
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'deleteConversation' : IDL.Func([IDL.Principal], [], []),
     'deleteMessage' : IDL.Func([IDL.Principal, Time], [], []),
+    'getCallerProfile' : IDL.Func([], [IDL.Opt(Profile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getMessages' : IDL.Func([IDL.Principal], [IDL.Vec(Message)], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-    'registerUser' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'saveCallerProfile' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'searchUsers' : IDL.Func(
         [IDL.Text],
         [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Text))],
@@ -72,6 +83,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'sendMessage' : IDL.Func([IDL.Principal, IDL.Text], [], []),
     'startConversation' : IDL.Func([IDL.Principal], [], []),
+    'updateDisplayName' : IDL.Func([IDL.Text], [], []),
     'updateEncryptionKey' : IDL.Func([IDL.Text], [], []),
   });
 };

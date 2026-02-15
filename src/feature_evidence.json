@@ -2,17 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-ensure-the-existing-chayan-web-chat-application-is-rebuilt-and-functions-end-to-end-for-a-signed-in-user-sign-in-with-internet-identity-discover-contacts-start-a-1-1-conversation-send-an-encrypted-message-fetch-and-display-decrypt-messages-and-use-existing-privacy-controls-delete-message-delete-conversation-clear-local-keys",
-      "featureTitle": "Ensure the existing chayan web chat application is rebuilt and functions end-to-end for a signed-in user: sign in with Internet Identity, discover contacts, start a 1:1 conversation, send an encrypted message, fetch and display/decrypt messages, and use existing privacy controls (delete message, delete conversation, clear local keys).",
+      "featureId": "feature-add-a-frontend-edit-profile-flow-that-lets-the-signed-in-user-update-their-display-name-and-ensure-the-updated-display-name-is-shown-in-the-header-dropdown-and-used-across-the-ui-where-the-current-user-name-is-displayed",
+      "featureTitle": "Add a frontend 'Edit profile' flow that lets the signed-in user update their display name, and ensure the updated display name is shown in the header dropdown and used across the UI where the current user name is displayed.",
       "files": [
         "frontend/src/components/ChatLayout.tsx",
         "frontend/src/components/ChayanHeader.tsx",
-        "frontend/src/features/conversations/ConversationList.tsx",
-        "frontend/src/features/messages/useSendMessage.ts",
-        "frontend/src/features/privacy/ConversationPrivacyMenu.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/lib/crypto/chayanCrypto.ts",
-        "frontend/src/state/conversationsStore.ts"
+        "frontend/src/features/profile/EditProfileDialog.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -23,7 +18,28 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-10"
+        "REQ-13"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-frontend-login-initialization-behavior-to-load-the-current-user-profile-from-the-backend-when-available-and-only-generate-register-a-default-profile-when-the-user-has-no-profile-yet",
+      "featureTitle": "Update the frontend login/initialization behavior to load the current user profile from the backend (when available) and only generate/register a default profile when the user has no profile yet.",
+      "files": [
+        "frontend/src/components/ChatLayout.tsx",
+        "frontend/src/components/ChayanHeader.tsx",
+        "frontend/src/features/profile/useCurrentUserProfile.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-14"
       ],
       "confidence": "high"
     }

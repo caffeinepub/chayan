@@ -1,13 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Rebuild and verify the existing Chayan web chat app so it works end-to-end for a signed-in user with encryption and privacy controls intact.
+**Goal:** Let the signed-in user view and update their profile display name after first login, without overwriting existing profile data on repeated sign-ins.
 
 **Planned changes:**
-- Ensure unauthenticated users see only the sign-in screen and all chat features are gated behind Internet Identity login.
-- Verify authenticated flow for discovering other registered users (excluding self), starting a 1:1 conversation, and viewing conversation history.
-- Ensure sending messages stores only ciphertext on the backend and the UI fetches, decrypts, and displays plaintext correctly.
-- Ensure message list refreshes via polling (no real-time sockets).
-- Ensure privacy controls work end-to-end: delete message, delete conversation, and clear local encryption keys without breaking the app.
+- Backend: add methods to fetch the caller’s current profile (displayName + encryptionKey) and to update only the caller’s displayName safely (including handling “not registered” callers).
+- Backend: make user registration idempotent so repeat login/registration does not overwrite an existing profile’s displayName or encryptionKey.
+- Frontend: add an “Edit profile” action in the header user dropdown that opens a dialog to edit display name with Save/Cancel, validation, and error handling (English text).
+- Frontend: on app initialization after authentication, fetch the existing profile first; only register a default profile when no profile exists, and keep the UI in sync without a full refresh.
 
-**User-visible outcome:** After signing in with Internet Identity, a user can find contacts, start a 1:1 chat, send encrypted messages that display decrypted after fetch, see messages update via polling, and use privacy options to delete messages/conversations and clear local keys reliably.
+**User-visible outcome:** A signed-in user can edit their display name via an “Edit profile” dialog, see the updated name reflected across the app immediately, and repeated sign-ins no longer reset their existing profile.
